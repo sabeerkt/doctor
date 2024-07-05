@@ -28,7 +28,7 @@ class _EditPageState extends State<EditPage> {
   TextEditingController numberController = TextEditingController();
   TextEditingController genderController = TextEditingController();
 
-  File? selectedImage; // Use File for image selection
+  File? selectedImage;
 
   @override
   void initState() {
@@ -50,84 +50,170 @@ class _EditPageState extends State<EditPage> {
         title: Text('Edit Doctor'),
         backgroundColor: Colors.green,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
-              controller: districtController,
-              decoration: const InputDecoration(labelText: 'District'),
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
-              controller: numberController,
-              decoration: const InputDecoration(labelText: 'Number'),
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
-              controller: genderController,
-              decoration: const InputDecoration(labelText: 'Gender'),
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    pro.setImage(ImageSource.camera);
-                  },
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Take Photo'),
-                ),
-                const SizedBox(width: 16.0),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    pro.setImage(ImageSource.gallery);
-                  },
-                  icon: const Icon(Icons.photo),
-                  label: const Text('Choose from Gallery'),
+                selectedImage != null
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.file(
+                            selectedImage!,
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'No Image',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        pro.setImage(ImageSource.camera);
+                      },
+                      icon: Icon(Icons.camera_alt),
+                      label: Text('Take Photo'),
+                    ),
+                    SizedBox(width: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        pro.setImage(ImageSource.gallery);
+                      },
+                      icon: Icon(Icons.photo),
+                      label: Text('Choose from Gallery'),
+                    ),
+                  ],
                 ),
               ],
             ),
-            if (pro.selectedImage != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.file(
-                    pro.selectedImage!,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    value: districtController.text,
+                    decoration: InputDecoration(
+                      labelText: 'District',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        districtController.text = value!;
+                      });
+                    },
+                    items: [
+                      'Alappuzha',
+                      'Ernakulam',
+                      'Idukki',
+                      'Kannur',
+                      'Kasaragod',
+                      'Kollam',
+                      'Kottayam',
+                      'Kozhikode',
+                      'Malappuram',
+                      'Palakkad',
+                      'Pathanamthitta',
+                      'Thrissur',
+                      'Thiruvananthapuram',
+                      'Wayanad'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: numberController,
+                    decoration: InputDecoration(
+                      labelText: 'Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    value: genderController.text,
+                    decoration: InputDecoration(
+                      labelText: 'Gender',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        genderController.text = value!;
+                      });
+                    },
+                    items: ['Male', 'Female']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_validateFields()) {
+                        editStudent(context);
+                      } else {
+                        _showAlert(context, 'Please fill in all fields.');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    child: Text('Save'),
+                  ),
+                ],
               ),
-            ElevatedButton(
-              onPressed: () {
-                if (_validateFields()) {
-                  editStudent(context);
-                } else {
-                  _showAlert(context, 'Please fill in all fields.');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-              ),
-              child: const Text('Save'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -145,14 +231,14 @@ class _EditPageState extends State<EditPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Alert'),
+          title: Text('Alert'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -171,13 +257,20 @@ class _EditPageState extends State<EditPage> {
       final editedNumber = numberController.text;
       final editedGender = genderController.text;
 
-      await provider.imageAdder(File(pro.selectedImage!.path));
+      String imageUrl;
+      if (pro.selectedImage != null) {
+        await provider.imageAdder(File(pro.selectedImage!.path));
+        imageUrl = provider.downloadurl;
+      } else {
+        imageUrl = widget
+            .student.image!; // Use existing image if no new image selected
+      }
 
       final updatedStudent = StudentModel(
         name: editedName,
         district: editedDistrict,
         email: editedEmail,
-        image: provider.downloadurl,
+        image: imageUrl,
         number: editedNumber,
         gender: editedGender,
       );

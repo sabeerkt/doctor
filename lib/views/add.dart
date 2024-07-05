@@ -12,37 +12,19 @@ import 'package:provider/provider.dart';
 class AddPage extends StatefulWidget {
   AddPage({Key? key}) : super(key: key);
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController districtController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController numberController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
-
-  // List of districts
-  final List<String> districts = [
-    'Alappuzha ',
-    'Ernakulam',
-    'Idukki',
-    'Kannur ',
-    'Kasaragod',
-    'Kollam ',
-    'Kottayam',
-    'Kozhikode ',
-    'Malappuram',
-    'Palakkad ',
-    'Pathanamthitta',
-    'Thrissur ',
-    'Thiruvananthapuram ',
-    'Wayanad',
-  ];
-
   @override
   _AddPageState createState() => _AddPageState();
 }
 
 class _AddPageState extends State<AddPage> {
-  String? selectedDistrict; // To store selected district
-  String? selectedGender; // To store selected gender
+  TextEditingController nameController = TextEditingController();
+  TextEditingController districtController = TextEditingController();
+  TextEditingController emailController = TextEditingController(text: '@gmail.com');
+  TextEditingController numberController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
+
+  String? selectedDistrict;
+  String? selectedGender;
 
   @override
   Widget build(BuildContext context) {
@@ -61,38 +43,36 @@ class _AddPageState extends State<AddPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Check if pro.selectedImage is not null, show the image; otherwise show a container
                 pro.selectedImage != null
                     ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.file(
-                            pro.selectedImage!,
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.file(
+                      pro.selectedImage!,
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
                     : Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'No Image',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ),
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'No Image',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16.0,
                       ),
-                // Row for the button
+                    ),
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -115,7 +95,6 @@ class _AddPageState extends State<AddPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Name TextFormField
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
@@ -130,18 +109,16 @@ class _AddPageState extends State<AddPage> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: widget.nameController,
+                      controller: nameController,
                       decoration: InputDecoration(
                         contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16.0),
+                        const EdgeInsets.symmetric(horizontal: 16.0),
                         labelText: 'Name',
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  // District Dropdown
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
@@ -159,16 +136,32 @@ class _AddPageState extends State<AddPage> {
                       value: selectedDistrict,
                       decoration: const InputDecoration(
                         labelText: 'District',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.0),
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
                         setState(() {
                           selectedDistrict = value;
-                          widget.districtController.text = value!;
+                          districtController.text = value!;
                         });
                       },
-                      items: widget.districts.map((String district) {
+                      items: [
+                        'Alappuzha',
+                        'Ernakulam',
+                        'Idukki',
+                        'Kannur',
+                        'Kasaragod',
+                        'Kollam',
+                        'Kottayam',
+                        'Kozhikode',
+                        'Malappuram',
+                        'Palakkad',
+                        'Pathanamthitta',
+                        'Thrissur',
+                        'Thiruvananthapuram',
+                        'Wayanad'
+                      ].map((String district) {
                         return DropdownMenuItem<String>(
                           value: district,
                           child: Text(district),
@@ -177,8 +170,6 @@ class _AddPageState extends State<AddPage> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  // Email TextFormField
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
@@ -193,17 +184,16 @@ class _AddPageState extends State<AddPage> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: widget.emailController,
+                      controller: emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.0),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  // Number TextFormField
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
@@ -218,17 +208,18 @@ class _AddPageState extends State<AddPage> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: widget.numberController,
+                      controller: numberController,
+                      keyboardType: TextInputType.phone,
+                      maxLength: 10,
                       decoration: const InputDecoration(
                         labelText: 'Number',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.0),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  // Gender Dropdown
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
@@ -246,13 +237,14 @@ class _AddPageState extends State<AddPage> {
                       value: selectedGender,
                       decoration: const InputDecoration(
                         labelText: 'Gender',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.0),
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
                         setState(() {
                           selectedGender = value;
-                          widget.genderController.text = value!;
+                          genderController.text = value!;
                         });
                       },
                       items: ['Male', 'Female'].map((String gender) {
@@ -264,12 +256,11 @@ class _AddPageState extends State<AddPage> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  // Save Button
                   ElevatedButton(
                     onPressed: () {
                       if (_validateFields()) {
                         addStudent(context);
+                        _clearFields();
                       } else {
                         _showAlert(
                             context, 'Please fill in all required fields.');
@@ -291,11 +282,11 @@ class _AddPageState extends State<AddPage> {
   }
 
   bool _validateFields() {
-    return widget.nameController.text.isNotEmpty &&
-        widget.districtController.text.isNotEmpty &&
-        widget.emailController.text.isNotEmpty &&
-        widget.numberController.text.isNotEmpty &&
-        widget.genderController.text.isNotEmpty;
+    return nameController.text.isNotEmpty &&
+        districtController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        numberController.text.isNotEmpty &&
+        genderController.text.isNotEmpty;
   }
 
   void _showAlert(BuildContext context, String message) {
@@ -321,30 +312,53 @@ class _AddPageState extends State<AddPage> {
   void addStudent(BuildContext context) async {
     final provider = Provider.of<StudentProvider>(context, listen: false);
     final pro = Provider.of<BaseProvider>(context, listen: false);
-    final name = widget.nameController.text;
-    final district = widget.districtController.text;
-    final email = widget.emailController.text;
-    final number = widget.numberController.text;
-    final gender = widget.genderController.text;
+    final name = nameController.text;
+    final district = districtController.text;
+    final email = emailController.text;
+    final number = numberController.text;
+    final gender = genderController.text;
 
-    await provider.imageAdder(File(pro.selectedImage!.path));
+    String imageUrl;
+    if (pro.selectedImage != null) {
+      await provider.imageAdder(File(pro.selectedImage!.path));
+      imageUrl = provider.downloadurl;
+    } else {
+      imageUrl =
+      'https://example.com/default_image.png'; // Replace with your default image URL
+    }
 
     final student = StudentModel(
       name: name,
       district: district,
       email: email,
-      image: provider.downloadurl,
+      image: imageUrl,
       number: number,
       gender: gender,
     );
 
     provider.addStudent(student);
 
+    // Clear fields after adding student
+    _clearFields();
+
+    // Navigate to next screen
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const BottomNav(),
       ),
     );
+  }
+
+  void _clearFields() {
+    nameController.clear();
+    districtController.clear();
+    emailController.clear();
+    numberController.clear();
+    genderController.clear();
+    setState(() {
+      selectedDistrict = null;
+      selectedGender = null;
+    });
   }
 }
