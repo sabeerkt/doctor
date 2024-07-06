@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:doctor/controller/baseprovider.dart';
 import 'package:doctor/controller/student_provider.dart';
 import 'package:doctor/model/student_model.dart';
@@ -9,29 +8,52 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class AddPage extends StatefulWidget {
-  AddPage({Key? key}) : super(key: key);
+class AddEditPage extends StatefulWidget {
+  final StudentModel? student;
+  final String? id;
+
+  AddEditPage({Key? key, this.student, this.id}) : super(key: key);
 
   @override
-  _AddPageState createState() => _AddPageState();
+  _AddEditPageState createState() => _AddEditPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _AddEditPageState extends State<AddEditPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController districtController = TextEditingController();
-  TextEditingController emailController = TextEditingController(text: '@gmail.com');
+  TextEditingController emailController = TextEditingController();
   TextEditingController numberController = TextEditingController();
   TextEditingController genderController = TextEditingController();
 
   String? selectedDistrict;
   String? selectedGender;
+  File? selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.student != null) {
+      nameController.text = widget.student!.name ?? '';
+      districtController.text = widget.student!.district ?? '';
+      emailController.text = widget.student!.email ?? '';
+      numberController.text = widget.student!.number ?? '';
+      genderController.text = widget.student!.gender ?? '';
+      selectedDistrict = widget.student!.district;
+      selectedGender = widget.student!.gender;
+      selectedImage = widget.student!.image != null ? File(widget.student!.image!) : null;
+    } else {
+      emailController.text = '@gmail.com';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<BaseProvider>(context);
+    final isEdit = widget.student != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Doctor'),
+        title: Text(isEdit ? 'Edit Doctor' : 'Add Doctor'),
         backgroundColor: Colors.green,
       ),
       body: Column(
@@ -43,40 +65,57 @@ class _AddPageState extends State<AddPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                pro.selectedImage != null
-                    ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.file(
-                      pro.selectedImage!,
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )
-                    : Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'No Image',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  ),
+                Consumer<BaseProvider>(
+                  builder: (context, provider, child) {
+                    final image = provider.selectedImage ?? selectedImage;
+                    return image != null
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.file(
+                                image,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                        : widget.student != null && widget.student!.image != null
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    widget.student!.image!,
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'No Image',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                              );
+                  },
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(width: 16.0),
                     ElevatedButton.icon(
                       onPressed: () {
                         pro.setImage(ImageSource.gallery);
@@ -95,182 +134,104 @@ class _AddPageState extends State<AddPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16.0),
-                        labelText: 'Name',
-                        border: InputBorder.none,
-                      ),
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    value: selectedDistrict,
+                    decoration: InputDecoration(
+                      labelText: 'District',
+                      border: OutlineInputBorder(),
                     ),
-                    child: DropdownButtonFormField<String>(
-                      value: selectedDistrict,
-                      decoration: const InputDecoration(
-                        labelText: 'District',
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0),
-                        border: InputBorder.none,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedDistrict = value;
-                          districtController.text = value!;
-                        });
-                      },
-                      items: [
-                        'Alappuzha',
-                        'Ernakulam',
-                        'Idukki',
-                        'Kannur',
-                        'Kasaragod',
-                        'Kollam',
-                        'Kottayam',
-                        'Kozhikode',
-                        'Malappuram',
-                        'Palakkad',
-                        'Pathanamthitta',
-                        'Thrissur',
-                        'Thiruvananthapuram',
-                        'Wayanad'
-                      ].map((String district) {
-                        return DropdownMenuItem<String>(
-                          value: district,
-                          child: Text(district),
-                        );
-                      }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDistrict = value;
+                        districtController.text = value!;
+                      });
+                    },
+                    items: [
+                      'Alappuzha',
+                      'Ernakulam',
+                      'Idukki',
+                      'Kannur',
+                      'Kasaragod',
+                      'Kollam',
+                      'Kottayam',
+                      'Kozhikode',
+                      'Malappuram',
+                      'Palakkad',
+                      'Pathanamthitta',
+                      'Thrissur',
+                      'Thiruvananthapuram',
+                      'Wayanad'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0),
-                        border: InputBorder.none,
-                      ),
+                  SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: numberController,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                      labelText: 'Number',
+                      border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    value: selectedGender,
+                    decoration: InputDecoration(
+                      labelText: 'Gender',
+                      border: OutlineInputBorder(),
                     ),
-                    child: TextFormField(
-                      controller: numberController,
-                      keyboardType: TextInputType.phone,
-                      maxLength: 10,
-                      decoration: const InputDecoration(
-                        labelText: 'Number',
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0),
-                        border: InputBorder.none,
-                      ),
-                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGender = value;
+                        genderController.text = value!;
+                      });
+                    },
+                    items: ['Male', 'Female']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: DropdownButtonFormField<String>(
-                      value: selectedGender,
-                      decoration: const InputDecoration(
-                        labelText: 'Gender',
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0),
-                        border: InputBorder.none,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value;
-                          genderController.text = value!;
-                        });
-                      },
-                      items: ['Male', 'Female'].map((String gender) {
-                        return DropdownMenuItem<String>(
-                          value: gender,
-                          child: Text(gender),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
                       if (_validateFields()) {
-                        addStudent(context);
-                        _clearFields();
+                        if (isEdit) {
+                          editStudent(context);
+                        } else {
+                          addStudent(context);
+                        }
                       } else {
-                        _showAlert(
-                            context, 'Please fill in all required fields.');
+                        _showAlert(context, 'Please fill in all fields.');
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
                       backgroundColor: Colors.green,
                     ),
-                    child: const Text('Save'),
+                    child: Text(isEdit ? 'Save' : 'Add'),
                   ),
                 ],
               ),
@@ -294,14 +255,14 @@ class _AddPageState extends State<AddPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Alert'),
+          title: Text('Alert'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -320,11 +281,10 @@ class _AddPageState extends State<AddPage> {
 
     String imageUrl;
     if (pro.selectedImage != null) {
-      await provider.imageAdder(File(pro.selectedImage!.path));
+      await provider.imageAdder(pro.selectedImage!);
       imageUrl = provider.downloadurl;
     } else {
-      imageUrl =
-      'https://example.com/default_image.png'; // Replace with your default image URL
+      imageUrl = 'https://example.com/default_image.png'; // Replace with your default image URL
     }
 
     final student = StudentModel(
@@ -350,6 +310,42 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
+  void editStudent(BuildContext context) async {
+    final provider = Provider.of<StudentProvider>(context, listen: false);
+    final pro = Provider.of<BaseProvider>(context, listen: false);
+
+    try {
+      final editedName = nameController.text;
+      final editedDistrict = districtController.text;
+      final editedEmail = emailController.text;
+      final editedNumber = numberController.text;
+      final editedGender = genderController.text;
+
+      String imageUrl;
+      if (pro.selectedImage != null) {
+        await provider.imageAdder(pro.selectedImage!);
+        imageUrl = provider.downloadurl;
+      } else {
+        imageUrl = widget.student!.image!; // Use existing image if no new image selected
+      }
+
+      final updatedStudent = StudentModel(
+        name: editedName,
+        district: editedDistrict,
+        email: editedEmail,
+        image: imageUrl,
+        number: editedNumber,
+        gender: editedGender,
+      );
+
+      provider.updateStudent(widget.id!, updatedStudent);
+
+      Navigator.pop(context);
+    } catch (e) {
+      print("Error updating student: $e");
+    }
+  }
+
   void _clearFields() {
     nameController.clear();
     districtController.clear();
@@ -357,6 +353,7 @@ class _AddPageState extends State<AddPage> {
     numberController.clear();
     genderController.clear();
     setState(() {
+      selectedImage = null;
       selectedDistrict = null;
       selectedGender = null;
     });

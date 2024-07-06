@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctor/controller/student_provider.dart';
 import 'package:doctor/model/student_model.dart';
 import 'package:doctor/views/add.dart';
+
 import 'package:doctor/views/deatil.dart';
 
-import 'package:doctor/views/edit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Doctors',
           style: TextStyle(
             color: Colors.black,
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               DropdownButton<String>(
                 value: selectedGender,
-                icon: Icon(Icons.arrow_drop_down),
+                icon: const Icon(Icons.arrow_drop_down),
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedGender = newValue;
@@ -52,10 +52,10 @@ class _HomePageState extends State<HomePage> {
                   );
                 }).toList(),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               DropdownButton<String>(
                 value: selectedDistrict,
-                icon: Icon(Icons.arrow_drop_down),
+                icon: const Icon(Icons.arrow_drop_down),
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedDistrict = newValue;
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 }).toList(),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
             ],
           ),
         ],
@@ -152,13 +152,14 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       "Place: ${data.district.toString()}",
                                       style: const TextStyle(
-                                        color: Colors.grey,
+                                        color:
+                                            Color.fromARGB(255, 142, 136, 136),
                                       ),
                                     ),
                                     Text(
                                       "Gender: ${data.gender.toString()}",
                                       style: const TextStyle(
-                                        color: Colors.grey,
+                                        color: Color.fromARGB(255, 243, 0, 0),
                                       ),
                                     ),
                                   ],
@@ -172,7 +173,8 @@ class _HomePageState extends State<HomePage> {
                                     backgroundColor: Colors.transparent,
                                     backgroundImage: data.image != null
                                         ? NetworkImage(data.image!)
-                                        : AssetImage('assets/add-friend (1).png'),
+                                        : const AssetImage(
+                                            'assets/add-friend (1).png'),
                                   ),
                                 ),
                                 trailing: Row(
@@ -180,7 +182,8 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.grey.withOpacity(0.5),
@@ -193,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.white,
-                                          backgroundColor: Colors.green,
+                                          // backgroundColor: Colors.green,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
@@ -203,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => EditPage(
+                                              builder: (context) => AddEditPage(
                                                 id: id,
                                                 student: data,
                                               ),
@@ -212,14 +215,15 @@ class _HomePageState extends State<HomePage> {
                                         },
                                         child: const Icon(
                                           Icons.edit,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(width: 16),
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.grey.withOpacity(0.5),
@@ -232,7 +236,7 @@ class _HomePageState extends State<HomePage> {
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.white,
-                                          backgroundColor: Colors.red,
+                                          // backgroundColor: Colors.red,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
@@ -244,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                                         },
                                         child: const Icon(
                                           Icons.delete,
-                                          color: Colors.white,
+                                          color: Colors.red,
                                         ),
                                       ),
                                     ),
@@ -268,7 +272,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddPage(),
+              builder: (context) => AddEditPage(),
             ),
           );
         },
