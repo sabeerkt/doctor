@@ -1,8 +1,6 @@
 import 'package:doctor/views/widget/bottombar.dart';
 import 'package:flutter/material.dart';
 
-
-
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -25,9 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Image.asset(
-          "assets/amzonpay.png",
+          "assets/splaaaa.jpg",
           width: 200.0,
-          height: 200.0,
+          height: 400.0,
         ),
       ),
       backgroundColor: Colors.white,

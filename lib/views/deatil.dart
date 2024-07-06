@@ -11,7 +11,7 @@ class DetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(student.name ?? 'Student Detail'),
-        backgroundColor: Colors.green, // Set app bar color
+        backgroundColor: Colors.green, 
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
