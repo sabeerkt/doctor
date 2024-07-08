@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:doctor/controller/baseprovider.dart';
 import 'package:doctor/controller/student_provider.dart';
 import 'package:doctor/model/student_model.dart';
-import 'package:doctor/views/screens/home.dart';
 import 'package:doctor/views/widget/bottombar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class AddEditPage extends StatefulWidget {
   final StudentModel? student;
@@ -40,7 +42,8 @@ class _AddEditPageState extends State<AddEditPage> {
       genderController.text = widget.student!.gender ?? '';
       selectedDistrict = widget.student!.district;
       selectedGender = widget.student!.gender;
-      selectedImage = widget.student!.image != null ? File(widget.student!.image!) : null;
+      selectedImage =
+          widget.student!.image != null ? File(widget.student!.image!) : null;
     } else {
       emailController.text = '@gmail.com';
     }
@@ -67,23 +70,34 @@ class _AddEditPageState extends State<AddEditPage> {
               children: [
                 Consumer<BaseProvider>(
                   builder: (context, provider, child) {
-                    final image = provider.selectedImage ?? selectedImage;
+                    final image = kIsWeb
+                        ? provider.selectedImageWeb
+                        : provider.selectedImage?.path ?? selectedImage?.path;
                     return image != null
                         ? Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.file(
-                                image,
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
+                              child: kIsWeb
+                                  ? Image.network(
+                                      image as String, // Cast to String for web
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(image), // Use as file for non-web
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
                           )
-                        : widget.student != null && widget.student!.image != null
+                        : widget.student != null &&
+                                widget.student!.image != null
                             ? Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image.network(
@@ -280,11 +294,14 @@ class _AddEditPageState extends State<AddEditPage> {
     final gender = genderController.text;
 
     String imageUrl;
-    if (pro.selectedImage != null) {
+    if (kIsWeb && pro.selectedImageWeb != null) {
+      imageUrl = pro.selectedImageWeb!;
+    } else if (pro.selectedImage != null) {
       await provider.imageAdder(pro.selectedImage!);
       imageUrl = provider.downloadurl;
     } else {
-      imageUrl = 'https://example.com/default_image.png'; // Replace with your default image URL
+      imageUrl =
+          'https://example.com/default_image.png'; // Replace with your default image URL
     }
 
     final student = StudentModel(
@@ -322,11 +339,14 @@ class _AddEditPageState extends State<AddEditPage> {
       final editedGender = genderController.text;
 
       String imageUrl;
-      if (pro.selectedImage != null) {
+      if (kIsWeb && pro.selectedImageWeb != null) {
+        imageUrl = pro.selectedImageWeb!;
+      } else if (pro.selectedImage != null) {
         await provider.imageAdder(pro.selectedImage!);
         imageUrl = provider.downloadurl;
       } else {
-        imageUrl = widget.student!.image!; // Use existing image if no new image selected
+        imageUrl = widget
+            .student!.image!; // Use existing image if no new image selected
       }
 
       final updatedStudent = StudentModel(

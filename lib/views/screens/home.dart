@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctor/controller/student_provider.dart';
 import 'package:doctor/model/student_model.dart';
 import 'package:doctor/views/add.dart';
-
 import 'package:doctor/views/deatil.dart';
 
 import 'package:flutter/material.dart';
@@ -174,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                                     backgroundImage: data.image != null
                                         ? NetworkImage(data.image!)
                                         : const AssetImage(
-                                            'assets/add-friend (1).png'),
+                                            'assets/placeholder.png'),
                                   ),
                                 ),
                                 trailing: Row(
