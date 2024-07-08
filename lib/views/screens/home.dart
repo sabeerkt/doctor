@@ -3,7 +3,6 @@ import 'package:doctor/controller/student_provider.dart';
 import 'package:doctor/model/student_model.dart';
 import 'package:doctor/views/add.dart';
 import 'package:doctor/views/deatil.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +16,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? selectedGender = 'All';
   String? selectedDistrict = 'All';
+  bool isGridView = false;
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -26,65 +27,21 @@ class _HomePageState extends State<HomePage> {
         title: const Text(
           'Doctors',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green,
+        elevation: 0,
         actions: [
-          Row(
-            children: [
-              DropdownButton<String>(
-                value: selectedGender,
-                icon: const Icon(Icons.arrow_drop_down),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedGender = newValue;
-                  });
-                },
-                items: <String>['All', 'Male', 'Female']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(width: 20),
-              DropdownButton<String>(
-                value: selectedDistrict,
-                icon: const Icon(Icons.arrow_drop_down),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedDistrict = newValue;
-                  });
-                },
-                items: <String>[
-                  'All',
-                  'Alappuzha',
-                  'Ernakulam',
-                  'Idukki',
-                  'Kannur',
-                  'Kasaragod',
-                  'Kollam',
-                  'Kottayam',
-                  'Kozhikode',
-                  'Malappuram',
-                  'Palakkad',
-                  'Pathanamthitta',
-                  'Thrissur',
-                  'Thiruvananthapuram',
-                  'Wayanad',
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(width: 20),
-            ],
+          IconButton(
+            icon: Icon(isGridView ? Icons.list : Icons.grid_view),
+            onPressed: () {
+              setState(() {
+                isGridView = !isGridView;
+              });
+            },
           ),
         ],
       ),
@@ -92,6 +49,78 @@ class _HomePageState extends State<HomePage> {
         child: Consumer<StudentProvider>(
           builder: (context, value, child) => Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search doctors...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onChanged: (query) {
+                          setState(() {
+                            searchQuery = query;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    DropdownButton<String>(
+                      value: selectedGender,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedGender = newValue;
+                        });
+                      },
+                      items: <String>['All', 'Male', 'Female']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(width: 16),
+                    DropdownButton<String>(
+                      value: selectedDistrict,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedDistrict = newValue;
+                        });
+                      },
+                      items: <String>[
+                        'All',
+                        'Alappuzha',
+                        'Ernakulam',
+                        'Idukki',
+                        'Kannur',
+                        'Kasaragod',
+                        'Kollam',
+                        'Kottayam',
+                        'Kozhikode',
+                        'Malappuram',
+                        'Palakkad',
+                        'Pathanamthitta',
+                        'Thrissur',
+                        'Thiruvananthapuram',
+                        'Wayanad',
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: StreamBuilder<QuerySnapshot<StudentModel>>(
                   stream: (selectedGender != null &&
@@ -118,146 +147,36 @@ class _HomePageState extends State<HomePage> {
                     } else {
                       List<QueryDocumentSnapshot<StudentModel>> studentsDoc =
                           snapshot.data?.docs ?? [];
-                      return ListView.builder(
-                        itemCount: studentsDoc.length,
-                        itemBuilder: (context, index) {
-                          final data = studentsDoc[index].data();
-                          final id = studentsDoc[index].id;
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailPage(
-                                    student: data,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Card(
-                              elevation: 3,
-                              margin: const EdgeInsets.all(8),
-                              child: ListTile(
-                                title: Text(
-                                  data.name ?? '',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Place: ${data.district.toString()}",
-                                      style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 142, 136, 136),
-                                      ),
-                                    ),
-                                    Text(
-                                      "Gender: ${data.gender.toString()}",
-                                      style: const TextStyle(
-                                        color: Color.fromARGB(255, 243, 0, 0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                leading: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    backgroundImage: data.image != null
-                                        ? NetworkImage(data.image!)
-                                        : const AssetImage(
-                                            'assets/placeholder.png'),
-                                  ),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 5,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          // backgroundColor: Colors.green,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => AddEditPage(
-                                                id: id,
-                                                student: data,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: const Icon(
-                                          Icons.edit,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 5,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          // backgroundColor: Colors.red,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          value.deleteStudent(id);
-                                          value.deleteImage(data.image);
-                                        },
-                                        child: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+
+                      // Filter the list based on search query
+                      studentsDoc = studentsDoc.where((doc) {
+                        final data = doc.data();
+                        return data.name
+                                ?.toLowerCase()
+                                .contains(searchQuery.toLowerCase()) ??
+                            false;
+                      }).toList();
+
+                      return isGridView
+                          ? GridView.builder(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.75,
                               ),
-                            ),
-                          );
-                        },
-                      );
+                              itemCount: studentsDoc.length,
+                              itemBuilder: (context, index) {
+                                return _buildDoctorCard(
+                                    studentsDoc[index], value);
+                              },
+                            )
+                          : ListView.builder(
+                              itemCount: studentsDoc.length,
+                              itemBuilder: (context, index) {
+                                return _buildDoctorListItem(
+                                    studentsDoc[index], value);
+                              },
+                            );
                     }
                   },
                 ),
@@ -277,6 +196,167 @@ class _HomePageState extends State<HomePage> {
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildDoctorCard(
+      QueryDocumentSnapshot<StudentModel> doc, StudentProvider value) {
+    final data = doc.data();
+    final id = doc.id;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(
+              student: data,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 3,
+        margin: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: data.image != null
+                        ? NetworkImage(data.image!)
+                        : const AssetImage('assets/add-friend (1).png')
+                            as ImageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.name ?? '',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Text(
+                    "Place: ${data.district}",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  Text(
+                    "Gender: ${data.gender}",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddEditPage(
+                          id: id,
+                          student: data,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    value.deleteStudent(id);
+                    value.deleteImage(data.image);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDoctorListItem(
+      QueryDocumentSnapshot<StudentModel> doc, StudentProvider value) {
+    final data = doc.data();
+    final id = doc.id;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(
+              student: data,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 3,
+        margin: const EdgeInsets.all(8),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: data.image != null
+                ? NetworkImage(data.image!)
+                : const AssetImage('assets/add-friend (1).png')
+                    as ImageProvider,
+          ),
+          title: Text(
+            data.name ?? '',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Place: ${data.district}",
+                style: TextStyle(color: Colors.grey),
+              ),
+              Text(
+                "Gender: ${data.gender}",
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddEditPage(
+                        id: id,
+                        student: data,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  value.deleteStudent(id);
+                  value.deleteImage(data.image);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
